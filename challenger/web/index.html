@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A Flutter web project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="MyApp">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <title>MyApp</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Include Firebase scripts (replace with your Firebase config) -->
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js"></script>
+  <script type="module" src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js"></script>
+
+  <script type="module">
+    // Import the necessary Firebase modules
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js';
+
+    // Your Firebase config object
+    var firebaseConfig = {
+      apiKey: "AIzaSyBkwojMaqQn2x_ETD_8Ls-Xi0j13L7IT5g",
+      authDomain: "challenger-b6a62.firebaseapp.com",
+      projectId: "challenger-b6a62",
+      storageBucket: "gs://challenger-b6a62.appspot.com",
+      messagingSenderId: "424067132634",
+      appId: "1:424067132634:android:33833b471d9c03048089e3"
+    };
+
+    // Log Firebase Config
+    console.log("Firebase Config:", firebaseConfig);
+
+    try {
+      // Initialize Firebase
+      initializeApp(firebaseConfig);
+      console.log("Firebase Initialized Successfully");
+    } catch (error) {
+      console.error("Firebase Initialization Error:", error);
+    }
+  </script>
+</head>
+
+<body>
+  <!-- This script installs service_worker.js for PWA functionality -->
+  <script type="module">
+    var serviceWorkerVersion = null;
+    var scriptLoaded = false;
+
+    function loadMainDartJs() {
+      if (scriptLoaded) {
+        return;
+      }
+      scriptLoaded = true;
+      var scriptTag = document.createElement('script');
+      scriptTag.src = 'main.dart.js';
+      scriptTag.type = 'application/javascript';
+      document.body.append(scriptTag);
+    }
+
+    if ('serviceWorker' in navigator) {
+      // Service workers are supported. Use them.
+      window.addEventListener('load', function () {
+        // Wait for registration to finish before dropping the <script> tag.
+        var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
+        navigator.serviceWorker.register(serviceWorkerUrl)
+          .then((reg) => {
+            function waitForActivation(serviceWorker) {
+              serviceWorker.addEventListener('statechange', () => {
+                if (serviceWorker.state == 'activated') {
+                  console.log('Installed new service worker.');
+                  loadMainDartJs();
+                }
+              });
+            }
+            if (!reg.active && (reg.installing || reg.waiting)) {
+              // No active web worker, and we have installed or are installing
+              // one for the first time. Simply wait for it to activate.
+              waitForActivation(reg.installing || reg.waiting);
+            } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
+              // When the app updates, the serviceWorkerVersion changes, so we
+              // ask the service worker to update.
+              console.log('New service worker available.');
+              reg.update();
+              waitForActivation(reg.installing);
+            } else {
+              // Existing service worker is still good.
+              console.log('Loading app from service worker.');
+              loadMainDartJs();
+            }
+          });
+
+        // If service worker doesn't succeed in a reasonable amount of time,
+        // fallback to plain <script> tag.
+        setTimeout(() => {
+          if (!scriptLoaded) {
+            console.warn(
+              'Failed to load app from service worker. Falling back to plain <script> tag.',
+            );
+            loadMainDartJs();
+          }
+        }, 4000);
+      });
+    } else {
+      // Service workers not supported. Just drop the <script> tag.
+      loadMainDartJs();
+    }
+  </script>
+</body>
+
+</html>
